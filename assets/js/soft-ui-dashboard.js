@@ -503,16 +503,18 @@ am5.ready(function() {
     yAxis: yAxis,
     valueYField: "visits",
     valueXField: "date",
+    fill: am5.color(0x574AE2),
+    stroke: am5.color(0x574AE2),
     tooltip: am5.Tooltip.new(root, {
       pointerOrientation: "horizontal",
       labelText: "[bold]{name}[/]\n{valueX.formatDate()}: {valueY}"
     })
   }));
-  
-  series.strokes.template.set("strokeWidth", 2);
+ 
+  series.strokes.template.set("strokeWidth", 3);
   series.fills.template.setAll({
     visible: true,
-    fillOpacity: 0.4
+    fillOpacity: 0.2
   });
   
   series.data.setAll(data);
@@ -563,3 +565,406 @@ am5.ready(function() {
   sbseries.data.setAll(data);
   
   }); 
+
+  // cluster column chart
+
+  am5.ready(function() {
+
+    // Create root element
+    // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+    var root = am5.Root.new("visitor-activity");
+    
+    
+    // Set themes
+    // https://www.amcharts.com/docs/v5/concepts/themes/
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+    
+    
+    // Create chart
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+      panX: false,
+      panY: false,
+      wheelX: "panX",
+      wheelY: "zoomX",
+      layout: root.verticalLayout
+    }));
+    
+    
+    // Add legend
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+    var legend = chart.children.push(
+      am5.Legend.new(root, {
+        centerX: am5.p50,
+        x: am5.p50
+      })
+    );
+    
+    var data = [{
+      "Month": "Sun",
+      "europe": 2.8,
+      "namerica": 2.5,
+    }, {
+      "Month": "Mon",
+      "europe": 2.6,
+      "namerica": 2.2,
+    }, {
+      "Month": "Tue",
+      "europe": 2.9,
+      "namerica": 2.4,
+    },
+    {
+      "Month": "Wed",
+      "europe": 2.8,
+      "namerica": 2.3,
+    },
+    {
+      "Month": "Thur",
+      "europe": 2.8,
+      "namerica": 2.2,
+    },
+    {
+      "Month": "Fri",
+      "europe": 2.6,
+      "namerica": 2.3,
+    },
+    {
+      "Month": "Sat",
+      "europe": 2.9,
+      "namerica": 2.4,
+    }]
+    
+    
+    // Create axes
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+    var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+      categoryField: "Month",
+      renderer: am5xy.AxisRendererX.new(root, {
+        cellStartLocation: 0.1,
+        cellEndLocation: 0.9
+      }),
+      tooltip: am5.Tooltip.new(root, {})
+    }));
+    
+    xAxis.data.setAll(data);
+    
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+      renderer: am5xy.AxisRendererY.new(root, {})
+    }));
+    
+    
+    // Add series
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+    function makeSeries(name, fieldName) {
+      var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+        name: name,
+        xAxis: xAxis,
+        yAxis: yAxis,
+        valueYField: fieldName,
+        categoryXField: "Month"
+      }));
+    
+      series.columns.template.setAll({
+        tooltipText: "{name}, {categoryX}:{valueY}",
+        width: am5.percent(70),
+        tooltipY: 0
+      });
+    
+      series.data.setAll(data);
+    
+      // Make stuff animate on load
+      // https://www.amcharts.com/docs/v5/concepts/animations/
+      series.appear();
+    
+      series.bullets.push(function () {
+        return am5.Bullet.new(root, {
+          locationY: 0,
+          sprite: am5.Label.new(root, {
+            text: "{valueY}",
+            fill: root.interfaceColors.get("alternativeText"),
+            centerY: 0,
+            centerX: am5.p50,
+            populateText: true
+          })
+        });
+      });
+    
+      legend.data.push(series);
+    }
+    
+    makeSeries("Active visitor", "europe");
+    makeSeries("Round visitor", "namerica");
+  
+   
+    
+    
+    // Make stuff animate on load
+    // https://www.amcharts.com/docs/v5/concepts/animations/
+    chart.appear(1000, 100);
+    
+    })
+
+    //date-event chart
+
+
+    am5.ready(function() {
+
+      // Create root element
+      // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+      var root = am5.Root.new("date-event");
+      root.dateFormatter.setAll({
+        dateFormat: "yyyy-MM-dd",
+        dateFields: ["valueX", "openValueX"]
+      });
+      
+      
+      // Set themes
+      // https://www.amcharts.com/docs/v5/concepts/themes/
+      root.setThemes([
+        am5themes_Animated.new(root)
+      ]);
+      
+      
+      // Create chart
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/
+      var chart = root.container.children.push(am5xy.XYChart.new(root, {
+        panX: false,
+        panY: false,
+        wheelX: "panX",
+        wheelY: "zoomX",
+        layout: root.verticalLayout
+      }));
+      
+      
+      // Add legend
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+      var legend = chart.children.push(am5.Legend.new(root, {
+        centerX: am5.p50,
+        x: am5.p50
+      }))
+      
+      var colors = chart.get("colors");
+      
+      // Data
+      var data = [{
+        category: "Module #1",
+        start: new Date(2016, 0, 1).getTime(),
+        end: new Date(2016, 0, 14).getTime(),
+        columnSettings: {
+          fill: am5.color(0x574AE2)
+        },
+        task: "Daily sales report"
+      }, {
+        category: "Module #1",
+        start: new Date(2016, 0, 16).getTime(),
+        end: new Date(2016, 0, 27).getTime(),
+        columnSettings: {
+          fill: am5.color(0x9087EE)
+        },
+        task: "Producing specifications"
+      }, {
+        category: "Module #1",
+        start: new Date(2016, 1, 5).getTime(),
+        end: new Date(2016, 3, 18).getTime(),
+        columnSettings: {
+          fill: am5.color(0x9087EE)
+        },
+        task: "product launch"
+      }, {
+        category: "Module #1",
+        start: new Date(2016, 3, 18).getTime(),
+        end: new Date(2016, 3, 30).getTime(),
+        columnSettings: {
+          fill: am5.color(0x574AE2)
+        },
+        task: "Client meeting"
+      }, {
+        category: "Module #2",
+        start: new Date(2016, 0, 8).getTime(),
+        end: new Date(2016, 0, 10).getTime(),
+        columnSettings: {
+          fill: am5.color(0x9087EE)
+        },
+        task: "product launch"
+      }, {
+        category: "Module #2",
+        start: new Date(2016, 0, 12).getTime(),
+        end: new Date(2016, 0, 15).getTime(),
+        columnSettings: {
+          fill: am5.color(0xFFAF61)
+        },
+        task: "Producing specifications"
+      }, {
+        category: "Module #2",
+        start: new Date(2016, 0, 16).getTime(),
+        end: new Date(2016, 1, 5).getTime(),
+        columnSettings: {
+          fill: am5.color(0x23dab2)
+        },
+        task: "Daily sales report"
+      }, {
+        category: "Module #2",
+        start: new Date(2016, 1, 10).getTime(),
+        end: new Date(2016, 1, 18).getTime(),
+        columnSettings: {
+          fill: am5.Color.brighten(colors.getIndex(2), 1.2)
+        },
+        task: "Testing and QA"
+      }, {
+        category: "Module #3",
+        start: new Date(2016, 0, 2).getTime(),
+        end: new Date(2016, 0, 8).getTime(),
+        columnSettings: {
+          fill: am5.Color.brighten(colors.getIndex(4), 0)
+        },
+        task: "Daily sales report"
+      }, {
+        category: "Module #3",
+        start: new Date(2016, 0, 8).getTime(),
+        end: new Date(2016, 0, 16).getTime(),
+        columnSettings: {
+          fill: am5.Color.brighten(colors.getIndex(4), 0.4)
+        },
+        task: "Producing specifications"
+      }, {
+        category: "Module #3",
+        start: new Date(2016, 0, 19).getTime(),
+        end: new Date(2016, 2, 1).getTime(),
+        columnSettings: {
+          fill: am5.Color.brighten(colors.getIndex(4), 0.8)
+        },
+        task: "Development"
+      }, {
+        category: "Module #3",
+        start: new Date(2016, 2, 12).getTime(),
+        end: new Date(2016, 3, 5).getTime(),
+        columnSettings: {
+          fill: am5.Color.brighten(colors.getIndex(4), 1.2)
+        },
+        task: "Testing and QA"
+      }, {
+        category: "Module #4",
+        start: new Date(2016, 0, 1).getTime(),
+        end: new Date(2016, 0, 19).getTime(),
+        columnSettings: {
+          fill: am5.color(0x8FDAFC)
+        },
+        task: "Gathering requirements"
+      }, {
+        category: "Module #4",
+        start: new Date(2016, 0, 19).getTime(),
+        end: new Date(2016, 1, 3).getTime(),
+        columnSettings: {
+          fill: am5.color(0x73C8EF)
+        },
+        task: "Producing specifications"
+      }, {
+        category: "Module #4",
+        start: new Date(2016, 2, 20).getTime(),
+        end: new Date(2016, 3, 25).getTime(),
+        columnSettings: {
+          fill: am5.color(0x8FDAFC)
+        },
+        task: "Development"
+      }, {
+        category: "Module #4",
+        start: new Date(2016, 3, 27).getTime(),
+        end: new Date(2016, 4, 15).getTime(),
+        columnSettings: {
+         
+          fill: am5.color(0x73C8EF)
+         
+        },
+        task: "Testing and QA"
+      }, {
+        category: "Module #5",
+        start: new Date(2016, 0, 1).getTime(),
+        end: new Date(2016, 0, 12).getTime(),
+        columnSettings: {
+          fill: am5.color(0x8175FF)
+        },
+        task: "Gathering requirements"
+      }, {
+        category: "Module #5",
+        start: new Date(2016, 0, 12).getTime(),
+        end: new Date(2016, 0, 19).getTime(),
+        columnSettings: {
+          fill: am5.color(0x9B92FE)
+        },
+        task: "Producing specifications"
+      }, {
+        category: "Module #5",
+        start: new Date(2016, 0, 19).getTime(),
+        end: new Date(2016, 2, 1).getTime(),
+        columnSettings: {
+          fill: am5.color(0xB9B3FC)
+         
+        },
+        task: "Development"
+      }, {
+        category: "Module #5",
+        start: new Date(2016, 2, 8).getTime(),
+        end: new Date(2016, 2, 30).getTime(),
+        columnSettings: {
+          fill: am5.color(0x958DEC)
+        },
+        task: "Testing and QA"
+      }];
+      
+      
+      // Create axes
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+      var yAxis = chart.yAxes.push(
+        am5xy.CategoryAxis.new(root, {
+          categoryField: "category",
+          renderer: am5xy.AxisRendererY.new(root, {}),
+          tooltip: am5.Tooltip.new(root, {})
+        })
+      );
+      
+      yAxis.data.setAll([
+        { category: "Module #1" },
+        { category: "Module #2" },
+        { category: "Module #3" },
+        { category: "Module #4" },
+        { category: "Module #5" }
+      ]);
+      
+      var xAxis = chart.xAxes.push(
+        am5xy.DateAxis.new(root, {
+          baseInterval: { timeUnit: "minute", count: 1 },
+          renderer: am5xy.AxisRendererX.new(root, {})
+        })
+      );
+      
+      
+      // Add series
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+      var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+        xAxis: xAxis,
+        yAxis: yAxis,
+        openValueXField: "start",
+        valueXField: "end",
+        categoryYField: "category",
+        sequencedInterpolation: true
+      }));
+      
+      series.columns.template.setAll({
+        templateField: "columnSettings",
+        strokeOpacity: 0,
+        tooltipText: "{task}:\n[bold]{openValueX}[/] - [bold]{valueX}[/]"
+      });
+      
+      series.data.setAll(data);
+      
+      // Add scrollbars
+      chart.set("scrollbarX", am5.Scrollbar.new(root, { orientation: "horizontal" }));
+      
+      // Make stuff animate on load
+      // https://www.amcharts.com/docs/v5/concepts/animations/
+      series.appear();
+      chart.appear(1000, 100);
+      
+      });
